@@ -1,0 +1,31 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:9.6.8-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=kickerdb
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes: 
+      - ./persistence/postgres:/var/lib/postgresql/data/pgdata
+    ports: 
+      - 5432:5432
+#  kicker-config:
+#    image: n52/kicker-config:latest
+#    ports:
+#      - 8888:8888
+#  kicker-registry:
+#    image: n52/kicker-registry:latest
+#    ports:
+#      - 8761:8761
+  # kicker-rest:
+  #   build:
+  #     context: .
+  #   image: docker.52north.org/kicker/rest:latest
+  #   ports:
+  #     - 8080:8080
+  #   environment: 
+  #     - spring.datasource.url=jdbc:postgresql://postgres/kickerdb
+  #     - spring.datasource.username=postgres
+  #     - spring.datasource.password=postgres
