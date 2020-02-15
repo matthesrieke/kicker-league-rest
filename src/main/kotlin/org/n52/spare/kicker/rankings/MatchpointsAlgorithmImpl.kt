@@ -9,7 +9,7 @@ class MatchpointsAlgorithmImpl : RankingsAlgorithm {
 	private val ranks: MutableMap<Player, Rank> = mutableMapOf()
 	
 	override fun calculateForMatches(matches: List<Match>): List<Rank> {
-		if (matches == null) return mutableListOf<Rank>()
+		if (matches.isEmpty()) return mutableListOf<Rank>()
 		
 		matches.forEach{m ->
 			if (m.score == null) return@forEach

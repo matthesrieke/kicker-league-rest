@@ -2,6 +2,7 @@ package org.n52.spare.kicker.security
 
 import org.n52.spare.kicker.model.Player
 import org.n52.spare.kicker.repositories.PlayerRepository
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
@@ -50,7 +51,7 @@ class RepositoryUserDetailsManager(private val playerRepo: PlayerRepository, pri
     }
 
     public fun playerFromAuthentication(auth: Authentication): Player {
-        val details = auth?.principal as UserDetails
+        val details = auth.principal as UserDetails
         val playerOpt = playerRepo.findByName(details.username)
         return playerOpt.get()
     }

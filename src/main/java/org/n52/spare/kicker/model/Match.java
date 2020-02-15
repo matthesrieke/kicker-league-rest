@@ -1,5 +1,6 @@
 package org.n52.spare.kicker.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.n52.spare.kicker.model.Views.Basic;
 
@@ -17,53 +18,45 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(
-        name = "matches"
-)
+@Table(name = "matches")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class Match {
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.AUTO
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @JsonView({Basic.class})
-    @Column(
-            nullable = false
-    )
+    @JsonView({ Basic.class })
+    @Column(nullable = false)
     private Date dateTime;
 
-    @JsonView({Basic.class})
-    @ManyToOne(
-            optional = false
-    )
+    @JsonView({ Basic.class })
+    @ManyToOne(optional = false)
     private Player home;
 
-    @JsonView({Basic.class})
-    @ManyToOne(
-            optional = false
-    )
+    @JsonView({ Basic.class })
+    @ManyToOne(optional = false)
     private Player guest;
 
-    @JsonView({Basic.class})
-    @OneToMany(
-            cascade = {CascadeType.ALL}
-    )
+    @JsonView({ Basic.class })
+    @OneToMany(cascade = { CascadeType.ALL })
     private List<MatchEvent> events;
 
-    @JsonView({Basic.class})
-    @OneToOne(
-            cascade = {CascadeType.ALL}
-    )
+    @JsonView({ Basic.class })
+    @OneToOne(cascade = { CascadeType.ALL })
     private Score score;
 
-    @JsonView({Views.Details.class})
-    @Column(
-            nullable = true
-    )
-    private String comment;
+    @JsonView(Basic.class)
+    @Column(nullable = true)
+    private Boolean homeApproved = false;
 
+    @JsonView(Basic.class)
+    @Column(nullable = true)
+    private Boolean guestApproved = false;
+
+    @JsonView({ Views.Details.class })
+    @Column(nullable = true)
+    private String comment;
 
     public final Long getId() {
         return this.id;
@@ -81,7 +74,6 @@ public final class Match {
         this.dateTime = var1;
     }
 
-
     public final Player getHome() {
         return this.home;
     }
@@ -89,7 +81,6 @@ public final class Match {
     public final void setHome(Player var1) {
         this.home = var1;
     }
-
 
     public final Player getGuest() {
         return this.guest;
@@ -99,7 +90,6 @@ public final class Match {
         this.guest = var1;
     }
 
-
     public final List<MatchEvent> getEvents() {
         return this.events;
     }
@@ -107,7 +97,6 @@ public final class Match {
     public final void setEvents(List<MatchEvent> var1) {
         this.events = var1;
     }
-
 
     public final Score getScore() {
         return this.score;
@@ -123,5 +112,21 @@ public final class Match {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Boolean getHomeApproved() {
+        return homeApproved;
+    }
+
+    public void setHomeApproved(Boolean homeApproved) {
+        this.homeApproved = homeApproved;
+    }
+
+    public Boolean getGuestApproved() {
+        return guestApproved;
+    }
+
+    public void setGuestApproved(Boolean guestApproved) {
+        this.guestApproved = guestApproved;
     }
 }

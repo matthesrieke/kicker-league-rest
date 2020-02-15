@@ -6,18 +6,17 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-
 public final class PageableResponse<T> {
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
 
     private Integer total;
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
 
     private Integer page;
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
 
     private Integer size;
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
 
     private List<T> data;
 
@@ -26,7 +25,7 @@ public final class PageableResponse<T> {
         response.data = pageable.getContent();
         response.page = pageable.getNumber();
         response.size = pageable.getSize();
-        response.total = pageable.getTotalPages() * pageable.getSize();
+        response.total = Math.toIntExact(pageable.getTotalElements());
         return response;
     }
 

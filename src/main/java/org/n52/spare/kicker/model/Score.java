@@ -1,5 +1,6 @@
 package org.n52.spare.kicker.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.n52.spare.kicker.model.Views.Basic;
 
@@ -10,18 +11,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(
-        name = "scores"
-)
+@Table(name = "scores")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class Score {
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.AUTO
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private int home;
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private int guest;
 
     public Long getId() {

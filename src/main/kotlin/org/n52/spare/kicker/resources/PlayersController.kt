@@ -38,7 +38,7 @@ class PlayersController {
         return playerRepository!!.findById(id!!).get()
     }
 
-    @RequestMapping(value = "", method = arrayOf(RequestMethod.POST))
+    @RequestMapping("", method = arrayOf(RequestMethod.POST))
     fun createPlayer(@RequestBody player: Player?): Player {
         if (player != null) {
             if (player.id != null) {

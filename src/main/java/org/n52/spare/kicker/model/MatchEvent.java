@@ -1,5 +1,6 @@
 package org.n52.spare.kicker.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.n52.spare.kicker.model.Views.Basic;
 
@@ -13,62 +14,54 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
-@Table(
-        name = "match_events"
-)
-
+@Table(name = "match_events")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class MatchEvent {
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.AUTO
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne
     private Match match;
 
-    @JsonView({Basic.class})
-    @Column(
-            nullable = false
-    )
+    @JsonView({ Basic.class })
+    @Column(nullable = false)
     private Date dateTime;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Integer homeScore;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Integer guestScore;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Boolean halftime;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Boolean fulltime;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Boolean overtime;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Boolean finished;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Boolean pause;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Boolean resume;
 
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private Boolean cancel;
-
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public final Long getId() {
         return this.id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public final Match getMatch() {
         return this.match;
@@ -78,7 +71,6 @@ public final class MatchEvent {
         this.match = var1;
     }
 
-
     public final Date getDateTime() {
         return this.dateTime;
     }
@@ -86,7 +78,6 @@ public final class MatchEvent {
     public final void setDateTime(Date var1) {
         this.dateTime = var1;
     }
-
 
     public final Integer getHomeScore() {
         return this.homeScore;
@@ -96,7 +87,6 @@ public final class MatchEvent {
         this.homeScore = var1;
     }
 
-
     public final Integer getGuestScore() {
         return this.guestScore;
     }
@@ -104,7 +94,6 @@ public final class MatchEvent {
     public final void setGuestScore(Integer var1) {
         this.guestScore = var1;
     }
-
 
     public final Boolean getHalftime() {
         return this.halftime;
@@ -114,7 +103,6 @@ public final class MatchEvent {
         this.halftime = var1;
     }
 
-
     public final Boolean getFulltime() {
         return this.fulltime;
     }
@@ -122,7 +110,6 @@ public final class MatchEvent {
     public final void setFulltime(Boolean var1) {
         this.fulltime = var1;
     }
-
 
     public final Boolean getOvertime() {
         return this.overtime;
@@ -132,7 +119,6 @@ public final class MatchEvent {
         this.overtime = var1;
     }
 
-
     public final Boolean getFinished() {
         return this.finished;
     }
@@ -140,7 +126,6 @@ public final class MatchEvent {
     public final void setFinished(Boolean var1) {
         this.finished = var1;
     }
-
 
     public final Boolean getPause() {
         return this.pause;
@@ -150,7 +135,6 @@ public final class MatchEvent {
         this.pause = var1;
     }
 
-
     public final Boolean getResume() {
         return this.resume;
     }
@@ -158,7 +142,6 @@ public final class MatchEvent {
     public final void setResume(Boolean var1) {
         this.resume = var1;
     }
-
 
     public final Boolean getCancel() {
         return this.cancel;

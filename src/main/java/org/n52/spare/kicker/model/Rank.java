@@ -1,17 +1,18 @@
 package org.n52.spare.kicker.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.n52.spare.kicker.model.Views.Basic;
 
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class Rank {
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private int rank;
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private int points;
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
     private int totalMatches;
-    @JsonView({Basic.class})
+    @JsonView({ Basic.class })
 
     private Player player;
 

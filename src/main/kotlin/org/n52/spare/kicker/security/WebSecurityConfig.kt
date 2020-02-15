@@ -19,6 +19,8 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 @EnableWebSecurity
 class WebSecurityConfig : WebSecurityConfigurerAdapter(), InitializingBean {
 
+    private lateinit var userManager: RepositoryUserDetailsManager
+
     @Autowired
     private val playerRepo: PlayerRepository? = null
 
@@ -38,7 +40,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter(), InitializingBean {
 
     @Bean
     public override fun userDetailsService(): UserDetailsService {
-        return this.userManager!!
+        return RepositoryUserDetailsManager(playerRepo!!, passwordEncoder!!)
     }
 
     @Bean(name = arrayOf("passwordEncoder"))
@@ -48,7 +50,6 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter(), InitializingBean {
 
     @Throws(Exception::class)
     override fun afterPropertiesSet() {
-        this.userManager = RepositoryUserDetailsManager(playerRepo!!, passwordEncoder!!)
         insertDummyData()
     }
 

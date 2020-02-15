@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.RestController
 import com.fasterxml.jackson.annotation.JsonView
 import org.n52.spare.kicker.model.*
 import org.n52.spare.kicker.repositories.PlayerRepository
+import org.n52.spare.kicker.security.RepositoryUserDetailsManager
+import org.n52.spare.kicker.security.WebSecurityConfig
 import org.springframework.data.domain.Sort
+import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @RestController
@@ -34,16 +37,20 @@ class MatchesController : InitializingBean {
     @Autowired
     private val playerRepository: PlayerRepository? = null
 
+    @Autowired
+    private val security: WebSecurityConfig? = null
+
     @JsonView(Views.Basic::class)
     @RequestMapping("")
     fun collection(@RequestParam(required = false) page: Optional<Int>,
                    @RequestParam(required = false) size: Optional<Int>): PageableResponse<Match> {
-        val pageable = matchRepository!!.findAll(PageRequest.of(page.orElse(0), size.orElse(10)))
+        val pageable = matchRepository!!.findAll(PageRequest.of(page.orElse(0), size.orElse(10),
+                Sort.by(Sort.Direction.DESC, "dateTime")))
         return PageableResponse.from(pageable)
     }
 
     @JsonView(Views.Details::class)
-    @RequestMapping(params = arrayOf("expanded=true"))
+    @RequestMapping("", params = arrayOf("expanded=true"))
     fun collectionWithDetails(@RequestParam(required = false) page: Optional<Int>,
                               @RequestParam(required = false) size: Optional<Int>): PageableResponse<Match> {
         return collection(page, size)
@@ -63,8 +70,8 @@ class MatchesController : InitializingBean {
         var requestingPlayer = (security!!.userDetailsService() as RepositoryUserDetailsManager).playerFromAuthentication(auth)
 
         when {
-            match?.guest?.id == requestingPlayer.id -> match.guestApproved = true
-            match?.home?.id == requestingPlayer.id -> match.homeApproved = true
+            match.guest.id == requestingPlayer.id -> match.guestApproved = true
+            match.home.id == requestingPlayer.id -> match.homeApproved = true
             else -> throw IllegalArgumentException("Not allowed to approve match")
         }
 
@@ -74,7 +81,7 @@ class MatchesController : InitializingBean {
     }
 
     @JsonView(Views.Basic::class)
-    @RequestMapping(value = "", method = arrayOf(RequestMethod.POST))
+    @RequestMapping("", method = arrayOf(RequestMethod.POST))
     fun createMatch(@RequestBody match: Match?): Match {
         if (match != null) {
             if (match.id != null) {
