@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -31,12 +32,12 @@ public final class Match {
     private Date dateTime;
 
     @JsonView({ Basic.class })
-    @ManyToOne(optional = false)
-    private Player home;
+    @ManyToMany()
+    private List<Player> home;
 
     @JsonView({ Basic.class })
-    @ManyToOne(optional = false)
-    private Player guest;
+    @ManyToMany()
+    private List<Player> guest;
 
     @JsonView({ Basic.class })
     @OneToMany(cascade = { CascadeType.ALL })
@@ -74,19 +75,19 @@ public final class Match {
         this.dateTime = var1;
     }
 
-    public final Player getHome() {
+    public final List<Player> getHome() {
         return this.home;
     }
 
-    public final void setHome(Player var1) {
+    public final void setHome(List<Player> var1) {
         this.home = var1;
     }
 
-    public final Player getGuest() {
+    public final List<Player> getGuest() {
         return this.guest;
     }
 
-    public final void setGuest(Player var1) {
+    public final void setGuest(List<Player> var1) {
         this.guest = var1;
     }
 

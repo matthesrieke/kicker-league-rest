@@ -1,8 +1,5 @@
 package org.n52.spare.kicker.resources
 
-import java.util.Date
-import java.util.Optional
-
 import org.n52.spare.kicker.model.Match
 import org.n52.spare.kicker.model.PageableResponse
 import org.n52.spare.kicker.model.Views
@@ -26,6 +23,8 @@ import org.n52.spare.kicker.security.WebSecurityConfig
 import org.springframework.data.domain.Sort
 import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import java.util.*
+import kotlin.collections.ArrayList
 
 @RestController
 @RequestMapping("/matches")
@@ -70,8 +69,8 @@ class MatchesController : InitializingBean {
         var requestingPlayer = (security!!.userDetailsService() as RepositoryUserDetailsManager).playerFromAuthentication(auth)
 
         when {
-            match.guest.id == requestingPlayer.id -> match.guestApproved = true
-            match.home.id == requestingPlayer.id -> match.homeApproved = true
+            !match.guest.none { p -> p.id == requestingPlayer.id } -> match.guestApproved = true
+            !match.home.none { p -> p.id == requestingPlayer.id } -> match.homeApproved = true
             else -> throw IllegalArgumentException("Not allowed to approve match")
         }
 
@@ -100,70 +99,74 @@ class MatchesController : InitializingBean {
     }
 
     fun resolvePlayers(match: Match): Match {
-        val guest = playerRepository!!.findByName(match.guest.nickName);
-        val home = playerRepository!!.findByName(match.home.nickName);
+        val guests = match.guest.map { p ->  playerRepository!!.findByName(p.nickName)}.filter{p -> p.isPresent}.map { p -> p.get() }
+        val homes = match.home.map { p ->  playerRepository!!.findByName(p.nickName)}.filter{p -> p.isPresent}.map { p -> p.get() }
 
-        if (!guest.isPresent) {
-            throw IllegalArgumentException("Guest player '" + match.guest.nickName + "' not found");
+        if (guests.size != match.guest.size) {
+            throw IllegalArgumentException("A Guest player was not found")
         }
 
-        if (!home.isPresent) {
-            throw IllegalArgumentException("Home player '" + match.home.nickName + "' not found");
+        if (homes.size != match.home.size) {
+            throw IllegalArgumentException("A Home player was not found")
         }
 
-        match.guest = guest.get();
-        match.home = home.get();
+
+        match.guest = guests
+        match.home = homes
 
         return match;
     }
 
     @Throws(Exception::class)
     override fun afterPropertiesSet() {
-        insertDummyData()
+//        insertDummyData()
     }
 
     fun insertDummyData() {
-//        val p1 = Player();
-//        p1.nickName = "Mathijsen";
-//        p1.firstName = "Matthes";
-//        p1.lastName = "Rieke";
-//        p1.password = "\$2a\$10\$sLqDPwTQ9UQT4zEzRyPIJeuQqgjRoJm6OXlYy6akFwQLCAqLHOzqq";
+//        matchRepository!!.deleteAll()
+//        val p3 = Player();
+//        p3.nickName = "Peter";
+//        p3.password = "\$2a\$10\$sLqDPwTQ9UQT4zEzRyPIJeuQqgjRoJm6OXlYy6akFwQLCAqLHOzqq";
 //
-//        val p2 = Player();
-//        p2.nickName = "Staschinho";
-//        p2.firstName = "Christoph";
-//        p2.lastName = "Stasch";
-//        p2.password = "\$2a\$10\$sLqDPwTQ9UQT4zEzRyPIJeuQqgjRoJm6OXlYy6akFwQLCAqLHOzqq";
+//        val p4 = Player();
+//        p4.nickName = "Klaus";
+//        p4.password = "\$2a\$10\$sLqDPwTQ9UQT4zEzRyPIJeuQqgjRoJm6OXlYy6akFwQLCAqLHOzqq";
 //
-//        playerRepo!!.save(p1);
-//        playerRepo!!.save(p2);
+//        playerRepository!!.save(p3);
+//        playerRepository!!.save(p4);
 //
-//        val m = Match();
-//        m.dateTime = Date();
-//        m.home = p2;
-//        m.guest = p1;
-//        m.guestApproved = true;
-//        val s = Score();
-//        s.guest = 6;
-//        s.home = 3;
-//        m.score = s;
-//        m.homeApproved = false;
-//
-//        val events = ArrayList<MatchEvent>();
-//        val e1 = MatchEvent();
-//        e1.dateTime = Date();
-//        e1.guestScore = 1;
-//        events.add(e1);
-//        e1.match = m;
-//        val e2 = MatchEvent();
-//        e2.dateTime = Date(e1.dateTime!!.getTime() + 10000);
-//        e2.fulltime = true;
-//        e2.match = m;
-//        events.add(e2);
-//
-//        m.events = events;
-//
-//        matchRepository!!.save(m);
+
+        val p1 = playerRepository!!.findByName("Mathijsen").get()
+        val p2 = playerRepository!!.findByName("Staschinho").get()
+        val p3 = playerRepository!!.findByName("Peter").get()
+        val p4 = playerRepository!!.findByName("Klaus").get()
+
+        val m = Match();
+        m.dateTime = Date();
+        m.home = mutableListOf(p1, p2)
+        m.guest = mutableListOf(p3, p4)
+        m.guestApproved = true;
+        val s = Score();
+        s.guest = 2;
+        s.home = 6;
+        m.score = s;
+        m.homeApproved = false;
+
+        val events = ArrayList<MatchEvent>();
+        val e1 = MatchEvent();
+        e1.dateTime = Date();
+        e1.guestScore = 1;
+        events.add(e1);
+        e1.match = m;
+        val e2 = MatchEvent();
+        e2.dateTime = Date(e1.dateTime!!.time + 10000);
+        e2.fulltime = true;
+        e2.match = m;
+        events.add(e2);
+
+        m.events = events;
+
+        matchRepository!!.save(m);
     }
 
 }

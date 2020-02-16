@@ -16,20 +16,20 @@ class MatchpointsAlgorithmImpl : RankingsAlgorithm {
 			
 			val guest = m.guest!!
 			val home = m.home!!
-			
-			plusMatch(guest)
-			plusMatch(home)
+
+			plusMatchForTeam(guest)
+			plusMatchForTeam(home)
 
 			when {
 				m.score!!.guest == m.score!!.home -> {
-					plusPoints(guest, 1)
-					plusPoints(home, 1)
+					plusPointsForTeam(guest, 1)
+					plusPointsForTeam(home, 1)
 				}
 				m.score!!.guest > m.score!!.home -> {
-					plusPoints(guest, 3)
+					plusPointsForTeam(guest, 3)
 				}
 				else -> {
-					plusPoints(home, 3)
+					plusPointsForTeam(home, 3)
 				}
 			}
 		}
@@ -55,6 +55,10 @@ class MatchpointsAlgorithmImpl : RankingsAlgorithm {
 		return result
 	}
 	
+	private fun plusMatchForTeam(players: List<Player>) {
+		players.forEach{p -> plusMatch(p)}
+	}
+
 	private fun plusMatch(player: Player) {
 		val r: Rank
 		if (ranks.containsKey(player)) {
@@ -65,10 +69,14 @@ class MatchpointsAlgorithmImpl : RankingsAlgorithm {
 			r.player = player
 			ranks[player] = r
 		}
-		
+
 		r.totalMatches += 1
 	}
-	
+
+	private fun plusPointsForTeam(players: List<Player>, points: Int) {
+		players.forEach{p -> plusPoints(p, points)}
+	}
+
 	private fun plusPoints(player: Player, points: Int) {
 		if (ranks.containsKey(player)) {
 			val r = ranks[player]!!
