@@ -22,6 +22,12 @@ import java.util.List;
 @Table(name = "matches")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class Match {
+
+    public static enum MatchType {
+        oneVersusOne,
+        twoVersusTwo
+    }
+
     @JsonView({ Basic.class })
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,6 +64,10 @@ public final class Match {
     @JsonView({ Views.Details.class })
     @Column(nullable = true)
     private String comment;
+
+    @JsonView(Basic.class)
+    @Column(nullable = true)
+    private String type;
 
     public final Long getId() {
         return this.id;
@@ -130,4 +140,13 @@ public final class Match {
     public void setGuestApproved(Boolean guestApproved) {
         this.guestApproved = guestApproved;
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
 }

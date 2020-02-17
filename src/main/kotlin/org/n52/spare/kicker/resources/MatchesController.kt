@@ -93,6 +93,12 @@ class MatchesController : InitializingBean {
 
             this.resolvePlayers(match);
 
+            if (match.home.size > 1) {
+                match.type = Match.MatchType.twoVersusTwo.name
+            } else {
+                match.type = Match.MatchType.oneVersusOne.name
+            }
+
             return matchRepository!!.save<Match?>(match)
         }
         throw IllegalArgumentException("no match object found")
