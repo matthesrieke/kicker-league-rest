@@ -18,6 +18,13 @@ spring:
         show_sql: true
         use_sql_comments: true
         format_sql: true
+kicker:
+  security:
+    users:
+      - name: Peter
+        password: asdf
+      - name: matthes
+        password: asdf
 logging:
   level:
     root: INFO

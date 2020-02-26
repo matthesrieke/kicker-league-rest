@@ -1,5 +1,6 @@
 package org.n52.spare.kicker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.n52.spare.kicker.model.Views.Basic;
@@ -35,6 +36,7 @@ public final class Player {
     private String email;
     @Column(nullable = false)
 
+    @JsonIgnore
     private String password;
 
     public final Long getId() {

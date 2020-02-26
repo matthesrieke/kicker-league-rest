@@ -56,9 +56,15 @@ class MatchesController : InitializingBean {
     }
 
     @JsonView(Views.Details::class)
-    @RequestMapping("/{id}")
+    @RequestMapping("/{id}", method = [RequestMethod.GET])
     fun single(@PathVariable id: Long): Match {
         return matchRepository!!.findById(id).get()
+    }
+
+    @RequestMapping("/{id}", method = [RequestMethod.DELETE])
+    fun delete(@PathVariable id: Long): Map<String, Boolean> {
+        matchRepository!!.deleteById(id);
+        return Collections.singletonMap("deleted", true);
     }
 
     @JsonView(Views.Details::class)
