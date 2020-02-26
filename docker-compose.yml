@@ -3,7 +3,7 @@ services:
   kicker-rest:
     build:
       context: .
-    image: docker.52north.org/kicker/rest:latest
+    image: docker.io/matthesrieke/kicker-rest:latest
     ports:
       - 8080:8080
     environment: 
