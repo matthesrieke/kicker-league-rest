@@ -10,3 +10,14 @@ services:
       - spring.datasource.url=jdbc:postgresql://localhost/kickerdb
       - spring.datasource.username=postgres
       - spring.datasource.password=postgres
+  kicker-rest-arm:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.arm
+    image: docker.io/matthesrieke/kicker-rest:latest-arm
+    ports:
+      - 8080:8080
+    environment:
+      - spring.datasource.url=jdbc:postgresql://localhost/kickerdb
+      - spring.datasource.username=postgres
+      - spring.datasource.password=postgres

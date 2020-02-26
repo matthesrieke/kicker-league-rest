@@ -19,13 +19,13 @@ services:
 #    image: n52/kicker-registry:latest
 #    ports:
 #      - 8761:8761
-  # kicker-rest:
-  #   build:
-  #     context: .
-  #   image: docker.52north.org/kicker/rest:latest
-  #   ports:
-  #     - 8080:8080
-  #   environment: 
-  #     - spring.datasource.url=jdbc:postgresql://postgres/kickerdb
-  #     - spring.datasource.username=postgres
-  #     - spring.datasource.password=postgres
+#  kicker-rest:
+#    build:
+#      context: .
+#    image: docker.52north.org/kicker/rest:latest
+#    ports:
+#      - 8080:8080
+#    environment: 
+#      - spring.datasource.url=jdbc:postgresql://postgres/kickerdb
+#      - spring.datasource.username=postgres
+#      - spring.datasource.password=postgres
