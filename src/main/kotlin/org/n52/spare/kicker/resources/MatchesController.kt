@@ -1,30 +1,22 @@
 package org.n52.spare.kicker.resources
 
-import org.n52.spare.kicker.model.Match
-import org.n52.spare.kicker.model.PageableResponse
-import org.n52.spare.kicker.model.Views
-import org.n52.spare.kicker.repositories.MatchRepository
-import org.springframework.beans.factory.InitializingBean
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-
 import com.fasterxml.jackson.annotation.JsonView
+import org.n52.spare.kicker.events.MatchSubmittedEvent
 import org.n52.spare.kicker.model.*
+import org.n52.spare.kicker.repositories.MatchRepository
 import org.n52.spare.kicker.repositories.PlayerRepository
 import org.n52.spare.kicker.security.RepositoryUserDetailsManager
 import org.n52.spare.kicker.security.WebSecurityConfig
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.security.core.Authentication
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.web.bind.annotation.*
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 @RestController
 @RequestMapping("/matches")
@@ -38,6 +30,9 @@ class MatchesController : InitializingBean {
 
     @Autowired
     private val security: WebSecurityConfig? = null
+
+    @Autowired
+    private val applicationEventPublisher: ApplicationEventPublisher? = null
 
     @JsonView(Views.Basic::class)
     @RequestMapping("")
@@ -105,7 +100,9 @@ class MatchesController : InitializingBean {
                 match.type = Match.MatchType.oneVersusOne.name
             }
 
-            return matchRepository!!.save<Match?>(match)
+            val result = matchRepository!!.save<Match?>(match)
+            applicationEventPublisher!!.publishEvent(MatchSubmittedEvent(match))
+            return result
         }
         throw IllegalArgumentException("no match object found")
     }

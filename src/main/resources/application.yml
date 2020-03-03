@@ -25,6 +25,8 @@ kicker:
         password: asdf
       - name: matthes
         password: asdf
+  slack:
+    postUrl: https://hooks.slack.com/services/xyz
 logging:
   level:
     root: INFO
