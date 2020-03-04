@@ -22,11 +22,12 @@ kicker:
   security:
     users:
       - name: Peter
-        password: asdf
+        password: asdfAsBcrypt
       - name: matthes
-        password: asdf
+        password: asdfAsBcrypt
   slack:
     postUrl: https://hooks.slack.com/services/xyz
+  publicUiUrl: http://192.168.52.72/ui/
 logging:
   level:
     root: INFO

@@ -51,7 +51,7 @@ class WebSecurityConfig : WebSecurityConfigurerAdapter(), InitializingBean {
         kickerSecurity!!.users.forEach { u ->
             auth!!.inMemoryAuthentication()
                     .withUser(u.name)
-                    .password(passwordEncoder().encode(u.password))
+                    .password(u.password)
                     .roles("USER")
         }
     }

@@ -1,15 +1,15 @@
 version: "3"
 services:
-  kicker-rest:
-    build:
-      context: .
-    image: docker.io/matthesrieke/kicker-rest:latest
-    ports:
-      - 8080:8080
-    environment: 
-      - spring.datasource.url=jdbc:postgresql://localhost/kickerdb
-      - spring.datasource.username=postgres
-      - spring.datasource.password=postgres
+#  kicker-rest:
+#    build:
+#      context: .
+#    image: docker.io/matthesrieke/kicker-rest:latest
+#    ports:
+#      - 8080:8080
+#    environment: 
+#      - spring.datasource.url=jdbc:postgresql://localhost/kickerdb
+#      - spring.datasource.username=postgres
+#      - spring.datasource.password=postgres
   kicker-rest-arm:
     build:
       context: .
