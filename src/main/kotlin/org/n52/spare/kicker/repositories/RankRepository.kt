@@ -1,6 +1,7 @@
 package org.n52.spare.kicker.repositories
 
 import org.n52.spare.kicker.model.Rank
+import org.n52.spare.kicker.rankings.EloAlgorithmImpl
 import org.n52.spare.kicker.rankings.MatchpointsAlgorithmImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -15,7 +16,7 @@ class RankRepository {
     private val matchRepository: MatchRepository? = null
 
     fun findAll(page: PageRequest?): Page<Rank> {
-        val ranks = MatchpointsAlgorithmImpl().calculateForMatches(matchRepository!!.findAll().toList())
+        val ranks = EloAlgorithmImpl().calculateForMatches(matchRepository!!.findAll().toList())
 
         return if (page != null) {
             val windowed = ranks.drop(page.offset.toInt()).take(page.pageSize)

@@ -54,4 +54,14 @@ public final class Rank {
     public final void setPlayer(Player var1) {
         this.player = var1;
     }
+
+    @Override
+    public String toString() {
+        return "Rank{" +
+                "rank=" + rank +
+                ", points=" + points +
+                ", totalMatches=" + totalMatches +
+                ", player=" + player +
+                '}';
+    }
 }

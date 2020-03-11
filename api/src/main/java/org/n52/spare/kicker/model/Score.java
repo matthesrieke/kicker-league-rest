@@ -45,4 +45,12 @@ public final class Score {
     public final void setGuest(int var1) {
         this.guest = var1;
     }
+
+    @Override
+    public String toString() {
+        return "Score{" +
+                "home=" + home +
+                ", guest=" + guest +
+                '}';
+    }
 }

@@ -149,4 +149,15 @@ public final class Match {
         this.type = type;
     }
 
+
+    @Override
+    public String toString() {
+        return "Match{" +
+                "id=" + id +
+                ", dateTime=" + dateTime +
+                ", home=" + home +
+                ", guest=" + guest +
+                ", score=" + score +
+                '}';
+    }
 }
