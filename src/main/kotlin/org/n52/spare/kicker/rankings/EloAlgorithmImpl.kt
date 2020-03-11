@@ -7,7 +7,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.stream.Collectors
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 class EloAlgorithmImpl : RankingsAlgorithm {
 
@@ -15,10 +14,9 @@ class EloAlgorithmImpl : RankingsAlgorithm {
 
     val INITIAL_ELO = 1000
 
-    class LocalPlayerScore {
-        public lateinit var player: Player
+    class TeamResult {
         public var score: Double = 0.0
-        public var elo: Int = 0
+        public var elo: Double = 0.0
         public var winner: Boolean = false;
     }
 
@@ -40,34 +38,28 @@ class EloAlgorithmImpl : RankingsAlgorithm {
 
         // calculate the Elo ratings, one match by one
         // current limitation: only 1 vs 1 supported
-        sortedMatches.filter{ m -> m.home.size == 1 && m.guest.size == 1}.forEach { m ->
+        sortedMatches.forEach { m ->
             val winners: List<Player> = getWinnerLoser(m, true)
             val losers: List<Player> = getWinnerLoser(m, false)
 
-            val winner = prepareTeamsWithWinnerFlag(winners, true)
-            val loser = prepareTeamsWithWinnerFlag(losers, false)
+            val winnerTeam = prepareTeamsWithWinnerFlag(winners, true)
+            val loserTeam = prepareTeamsWithWinnerFlag(losers, false)
 
             log.info("Match: {}", m)
-            log.info("Elo before: {}: {}, {}: {}", winner.player.nickName, winner.elo, loser.player.nickName, loser.elo)
+            log.info("Elo before: winner: {}, loser: {}", winnerTeam.elo, loserTeam.elo)
 
-            val winnerChange = calculateEloChange(winner, loser)
-            log.info("Elo change winner: {}", winnerChange);
+            val eloChange = calculateEloChange(winnerTeam.elo, loserTeam.elo)
+            log.info("Elo change winner: {}", eloChange);
+            log.info("Elo change loser: {}", eloChange  * -1);
 
-            val loserChange = calculateEloChange(loser, winner)
-            log.info("Elo change loser: {}", loserChange);
-
-            winner.elo += winnerChange
-            loser.elo += loserChange
-
-            log.info("Elo after: {}: {}, {}: {}", winner.player.nickName, winner.elo, loser.player.nickName, loser.elo)
-
+            // apply same Elo change for all players of a match --> no "contribution" or weight applied
             // set Elo for the player objects
-            allPlayers.stream().filter{p -> p == loser.player}.forEach{p ->
-                p.rating = loser.elo
+            allPlayers.stream().filter{p -> losers.contains(p)}.forEach{p ->
+                p.rating = if (p.rating != null) p.rating - eloChange else INITIAL_ELO - eloChange
                 matchCounts[p] = matchCounts[p]!! + 1
             }
-            allPlayers.stream().filter{p -> p == winner.player}.forEach{p ->
-                p.rating = winner.elo
+            allPlayers.stream().filter{p -> winners.contains(p)}.forEach{p ->
+                p.rating = if (p.rating != null) p.rating + eloChange else INITIAL_ELO + eloChange
                 matchCounts[p] = matchCounts[p]!! + 1
             }
         }
@@ -86,18 +78,15 @@ class EloAlgorithmImpl : RankingsAlgorithm {
         return playerRanks
     }
 
-    private fun prepareTeamsWithWinnerFlag(players: List<Player>, isWinner: Boolean): LocalPlayerScore {
-        return players.stream().map { p ->
-            val lps = LocalPlayerScore()
-            lps.player = p
-            if (p.rating == null || p.rating == 0) {
-                lps.elo = INITIAL_ELO
-            } else {
-                lps.elo = p.rating
-            }
-            lps.winner = isWinner
-            lps
-        }.findFirst().get()
+    private fun prepareTeamsWithWinnerFlag(players: List<Player>, isWinner: Boolean): TeamResult {
+        val teamResult = TeamResult()
+        teamResult.elo = players.stream().map {p ->
+            if (p.rating == null) INITIAL_ELO else p.rating
+        }.mapToInt { i -> i }.average().asDouble
+
+        teamResult.winner = isWinner
+        teamResult.score = if (isWinner) 1.0 else 0.0
+        return teamResult
     }
 
     private fun getWinnerLoser(m: Match, selectWinner: Boolean): List<Player> {
@@ -108,32 +97,16 @@ class EloAlgorithmImpl : RankingsAlgorithm {
         }
     }
 
-    private fun calculateScore(isTargetPlayerWinner: Boolean, isOtherPlayerWinner: Boolean): Double {
-        if (isTargetPlayerWinner && isOtherPlayerWinner) {
-            // consider both true as a draw
-            return 0.5;
-        }
-        return if (isTargetPlayerWinner) {
-            1.0;
-        } else {
-            0.0;
-        }
-    }
-
-    private fun calculateExpectedScore(targetPlayerElo: Int, otherPlayerElo: Int): Double {
-        val transformedTargetElo: Double = 10.0.pow(targetPlayerElo / 400.0)
-        val transformedOtherElo: Double = 10.0.pow(otherPlayerElo / 400.0)
+    private fun calculateExpectedScore(targetElo: Double, otherElo: Double): Double {
+        val transformedTargetElo: Double = 10.0.pow(targetElo / 400.0)
+        val transformedOtherElo: Double = 10.0.pow(otherElo / 400.0)
         return (transformedTargetElo / (transformedTargetElo + transformedOtherElo))
     }
 
-    private fun calculateEloChange(targetPlayer: LocalPlayerScore, otherPlayer: LocalPlayerScore, kFactor: Int = 32): Int {
-        val score = calculateScore(targetPlayer.winner, otherPlayer.winner)
-        val expectedScore = calculateExpectedScore(targetPlayer.elo, otherPlayer.elo)
+    private fun calculateEloChange(winnerElo: Double, loserElo: Double, kFactor: Int = 32): Int {
+        val score = 1.0
+        val expectedScore = calculateExpectedScore(winnerElo, loserElo)
         return (kFactor * (score - expectedScore)).toInt()
-    }
-
-    private fun calculateElo(players: List<LocalPlayerScore>): List<LocalPlayerScore> {
-        throw NotImplementedError("not yet implemented")
     }
 
 }
